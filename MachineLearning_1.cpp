@@ -1,4 +1,4 @@
-#include <algorithm>
+п»ї#include <algorithm>
 #include <vector>
 #include <string>
 #include <cmath>
@@ -6,16 +6,16 @@
 #include <iostream>
 using namespace std;
 
-//Источник = фичи + пулл
+//РСЃС‚РѕС‡РЅРёРє = С„РёС‡Рё + РїСѓР»Р»
 struct TInstance {
-  vector<float> Features;	//Фичи
-  float Goal;			//Результат
+  vector<float> Features;	//Р¤РёС‡Рё
+  float Goal;			//Р РµР·СѓР»СЊС‚Р°С‚
 public:
   TInstance(const string& descr) {
     ParseFromString(descr);
   }
   
-  //Перемешиваем фичи
+  //РџРµСЂРµРјРµС€РёРІР°РµРј С„РёС‡Рё
   vector<float> Split(const string& descr) {
     size_t begin = 0;
     size_t end = 0;
@@ -29,7 +29,7 @@ public:
     return Features;
   }
   
-  //Считываем инсточники со строки
+  //РЎС‡РёС‚С‹РІР°РµРј РёРЅСЃС‚РѕС‡РЅРёРєРё СЃРѕ СЃС‚СЂРѕРєРё
   void ParseFromString(const string& descr) {
     vector<float> values = Split(descr);
     Goal = values[1];
@@ -37,11 +37,11 @@ public:
   }
 };
 
-//Пулл
+//РџСѓР»Р»
 struct TPool {
-  vector<TInstance> Instances;		//Источники
+  vector<TInstance> Instances;		//РСЃС‚РѕС‡РЅРёРєРё
   
-  //Считываем источники из фала
+  //РЎС‡РёС‚С‹РІР°РµРј РёСЃС‚РѕС‡РЅРёРєРё РёР· С„Р°Р»Р°
   void ReadFromFile(const string& filename) {
     fstream featuresIn(filename, std::ios::in);
     char ch[10000];
@@ -54,21 +54,21 @@ struct TPool {
   }
 };
 
-//Предиктор
+//РџСЂРµРґРёРєС‚РѕСЂ
 class TPredictor {
 private:
-  size_t FeatureNumber;		//Кол-во фич
+  size_t FeatureNumber;		//РљРѕР»-РІРѕ С„РёС‡
   //y = a*x + b
-  float Factor;			//Фактор = a
-  float Offset;			//Оффсет = b
+  float Factor;			//Р¤Р°РєС‚РѕСЂ = a
+  float Offset;			//РћС„С„СЃРµС‚ = b
   
 public:
-  //гол = фича * фактор + оффсет
+  //РіРѕР» = С„РёС‡Р° * С„Р°РєС‚РѕСЂ + РѕС„С„СЃРµС‚
   float Prediction(const vector<float>& features) const {
         return Factor * features[FeatureNumber] + Offset;
   }
   
-  //Метрика = среднеквадратичное отклонение
+  //РњРµС‚СЂРёРєР° = СЃСЂРµРґРЅРµРєРІР°РґСЂР°С‚РёС‡РЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ
   static float Metric(const TPredictor& predictor, const TPool& pool) {
     float sumSquaredErrors = 0.f;
     for (size_t i = 0; i < pool.Instances.size(); ++i) {
@@ -79,14 +79,14 @@ public:
     return sqrt(sumSquaredErrors / pool.Instances.size());
   }
   
-  //Обучение машины
+  //РћР±СѓС‡РµРЅРёРµ РјР°С€РёРЅС‹
   void Learn(const TPool& pool) {
-    vector<float> Errors;		//Ошибки вычисления
-    vector<float> Factors;		//Факторы
-    vector<float> Offsets;		//Оффсеты
+    vector<float> Errors;		//РћС€РёР±РєРё РІС‹С‡РёСЃР»РµРЅРёСЏ
+    vector<float> Factors;		//Р¤Р°РєС‚РѕСЂС‹
+    vector<float> Offsets;		//РћС„С„СЃРµС‚С‹
     for (size_t featureNumber = 0; featureNumber < pool.Instances[0].Features.size(); ++featureNumber) {
-      // определяем оптимальные factor, offset для фичи с номером featureNumber
-      // посчитали ошибку на пуле 
+      // РѕРїСЂРµРґРµР»СЏРµРј РѕРїС‚РёРјР°Р»СЊРЅС‹Рµ factor, offset РґР»СЏ С„РёС‡Рё СЃ РЅРѕРјРµСЂРѕРј featureNumber
+      // РїРѕСЃС‡РёС‚Р°Р»Рё РѕС€РёР±РєСѓ РЅР° РїСѓР»Рµ 
       float featureFactor = 0.f;
       float featureOffset = 0.f;
       float featureSummX = 0.f;
@@ -117,7 +117,7 @@ public:
       std::cout << Error << std::endl;
     }
     
-    //высчитываем минимум ошибки
+    //РІС‹СЃС‡РёС‚С‹РІР°РµРј РјРёРЅРёРјСѓРј РѕС€РёР±РєРё
     float minError = Errors[0]; 
     for (size_t featureNumber = 0; featureNumber < pool.Instances[0].Features.size(); ++featureNumber) {
       if(Errors[featureNumber] < minError)
@@ -133,7 +133,7 @@ public:
 };
 
 
-//Перетасовывааем фичи
+//РџРµСЂРµС‚Р°СЃРѕРІС‹РІР°Р°РµРј С„РёС‡Рё
 void Shuffle(vector<size_t>& vector) {
   int length = rand();
   for(size_t j = 0; j < length; ++j)
@@ -145,7 +145,7 @@ void Shuffle(vector<size_t>& vector) {
     }
 }
 
-//Скользящий контроль = тусуем обучающую и тестовые выборки, выбмраем оптимальный вариант
+//РЎРєРѕР»СЊР·СЏС‰РёР№ РєРѕРЅС‚СЂРѕР»СЊ = С‚СѓСЃСѓРµРј РѕР±СѓС‡Р°СЋС‰СѓСЋ Рё С‚РµСЃС‚РѕРІС‹Рµ РІС‹Р±РѕСЂРєРё, РІС‹Р±РјСЂР°РµРј РѕРїС‚РёРјР°Р»СЊРЅС‹Р№ РІР°СЂРёР°РЅС‚
 float CrossValidation(TPredictor& predictor, const TPool& pool, size_t foldsCount) {
   vector<TPool> learnFolds(foldsCount);
   vector<TPool> testFolds(foldsCount);
@@ -171,13 +171,13 @@ float CrossValidation(TPredictor& predictor, const TPool& pool, size_t foldsCoun
 }
 
 int main() {
-  //Тестовое обучение на основе линейной регрессии
+  //РўРµСЃС‚РѕРІРѕРµ РѕР±СѓС‡РµРЅРёРµ РЅР° РѕСЃРЅРѕРІРµ Р»РёРЅРµР№РЅРѕР№ СЂРµРіСЂРµСЃСЃРёРё
   TPool pool;
   pool.ReadFromFile("machine_cpu.features");
   TPredictor predictor;
   float cv = 0;
   size_t index = 0;
-  //Запуск скользящего контроля
+  //Р—Р°РїСѓСЃРє СЃРєРѕР»СЊР·СЏС‰РµРіРѕ РєРѕРЅС‚СЂРѕР»СЏ
   do
     {
       srand(index);
@@ -185,6 +185,6 @@ int main() {
       cout << "Cross Validation: " << cv << "	index: " << index << endl;
       index++;
     }
-  //Условие выхода, результат не отличается от результата "weka" на 5
+  //РЈСЃР»РѕРІРёРµ РІС‹С…РѕРґР°, СЂРµР·СѓР»СЊС‚Р°С‚ РЅРµ РѕС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ СЂРµР·СѓР»СЊС‚Р°С‚Р° "weka" РЅР° 5
   while(abs(100 - cv) >= 5);
 }
